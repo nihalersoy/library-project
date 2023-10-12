@@ -3,9 +3,11 @@ package com.tpe.service;
 import com.tpe.entity.business.Book;
 import com.tpe.entity.user.User;
 import com.tpe.exception.BadRequestException;
+import com.tpe.exception.ConflictException;
 import com.tpe.exception.ResourceNotFoundException;
 import com.tpe.payload.mappers.BookMapper;
 import com.tpe.payload.messages.ErrorMessages;
+import com.tpe.payload.request.business.BookRequest;
 import com.tpe.payload.response.business.BookResponse;
 import com.tpe.payload.response.business.ResponseMessage;
 import com.tpe.repository.business.BookRepository;
@@ -74,7 +76,14 @@ public class BookService {
     }
 
 
+    public ResponseMessage<BookResponse> saveBook(BookRequest bookRequest) {
 
+        //gelen bookRequest database de var mı?
+         if ( bookRepository.existsByIsbn(bookRequest.getIsbn())){
+             throw new ConflictException(String.format(ErrorMessages.BOOK_ALREADY_EXISTS,bookRequest.getIsbn()));
+         }
 
+         //
 
+    }
 }
