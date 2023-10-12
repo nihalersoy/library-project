@@ -24,7 +24,7 @@ public interface BookRepository extends JpaRepository<Book,Long> {
             @Param("publisher") String publisher, @Param("isAdmin") boolean isAdmin, Pageable pageable
     );
 
-
+    boolean existsByIsbn(String isbn);
 
 
 }

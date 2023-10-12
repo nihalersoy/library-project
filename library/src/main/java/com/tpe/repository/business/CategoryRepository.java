@@ -1,2 +1,9 @@
-package com.tpe.repository.business;public interface CategoryRepository {
+package com.tpe.repository.business;
+
+import com.tpe.entity.business.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CategoryRepository extends JpaRepository<Category,Long> {
+
+
 }

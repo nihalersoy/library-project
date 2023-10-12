@@ -1,9 +1,6 @@
 package com.tpe.entity.business;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.File;
@@ -16,37 +13,37 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 
+@Builder(toBuilder = true)
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false) //TODO min:2 max:80
-    private String name;
-
-    @Column(nullable = false,length = 17) //TODO format:999-99-99999-99-9
-    private String isbn;
+    private Long id;//
 
     @Column(nullable = false)
-    private int pageCount;
+    private String name;//
+
+    @Column(nullable = false,length = 17,unique = true)
+    private String isbn;//
+
+    private Integer pageCount;//
 
     @Column(length = 4)
-    private int publishDate; //TODO only year info(yani sadece 4 karakter)
+    private int publishDate; //
 
-    private File image;
+    private File image;//
 
     @Column(nullable = false) //TODO default deger true
     private boolean loanable;
 
-    @Column(nullable = false,length = 6)//TODO format AA-999
-    private String shelfCode;
+    @Column(nullable = false,length = 6)
+    private String shelfCode;//
 
     @Column(nullable = false)//TODO default true
     private Boolean active;
 
     @Column(nullable = false) //TODO default false
-    private boolean featured;
+    private boolean featured;//
 
     @Column(nullable = false)//TODO yyyy-MM-dd HH:mm timezone:US
     private LocalDateTime createDate;

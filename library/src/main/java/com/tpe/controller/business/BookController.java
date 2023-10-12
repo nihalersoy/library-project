@@ -1,12 +1,11 @@
 package com.tpe.controller.business;
 
-import com.tpe.exception.BadRequestException;
-import com.tpe.payload.messages.ErrorMessages;
+import com.tpe.payload.request.business.BookRequest;
+import com.tpe.payload.request.business.BookRequestForUpdate;
 import com.tpe.payload.response.business.BookResponse;
 import com.tpe.payload.response.business.ResponseMessage;
-import com.tpe.service.BookService;
+import com.tpe.service.business.BookService;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,7 @@ public class BookController {
 
     private final BookService bookService;
 
-    //Not: getBooksWithPage
+    //Not: getBooksWithPage()
     @GetMapping //FRD herkes girebilsin demiş //TODO WhiteList ekle
     public Page<BookResponse> getBooksWithPage(
             @RequestParam(value = "q",required = false,defaultValue = "null") String q,
@@ -39,20 +38,39 @@ public class BookController {
 
     }
 
-    //Not: getBookById
+    //Not: getBookById()
     @GetMapping("/{id}") //TODO WhiteList ekle
     public ResponseMessage<BookResponse> getBookById(@PathVariable Long id){
 
         return bookService.getBookById(id);
     }
 
-    //Not: saveBook
+    //Not: saveBook()
     @PreAuthorize("hasAnyAuthority('ADMIN)")
     @PostMapping("/save")
     public ResponseMessage<BookResponse> saveBook(@RequestBody @Valid BookRequest bookRequest){
 
         return bookService.saveBook(bookRequest);
     }
+
+    //Not: updateBookById()
+    @PreAuthorize("hasAnyAuthority('ADMIN)")
+    @PutMapping("/updateBook/{id}")
+    public ResponseMessage<BookResponse> updateBook(
+            @RequestBody @Valid BookRequestForUpdate bookRequestForUpdate,
+            @PathVariable Long id){
+
+        return bookService.updateBook(bookRequestForUpdate,id);
+    }
+
+    //NOT: deleteBookById()
+    @PreAuthorize("hasAnyAuthority('ADMIN)")
+    @DeleteMapping("/delete/{id}")
+    public ResponseMessage<String> deleteBook (@PathVariable Long id){
+
+        return bookService.deleteBookById(id);
+    }
+
 
 
 

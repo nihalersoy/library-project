@@ -1,2 +1,8 @@
-package com.tpe.repository.business;public interface PublisherRepository {
+package com.tpe.repository.business;
+
+import com.tpe.entity.business.Publisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PublisherRepository extends JpaRepository<Publisher,Long> {
+
 }
