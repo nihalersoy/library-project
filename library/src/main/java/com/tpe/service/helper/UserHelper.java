@@ -1,6 +1,7 @@
 package com.tpe.service.helper;
 
 import com.tpe.entity.user.User;
+import com.tpe.exception.ConflictException;
 import com.tpe.exception.ResourceNotFoundException;
 import com.tpe.payload.messages.ErrorMessages;
 import com.tpe.repository.user.UserRepository;
@@ -27,6 +28,15 @@ public class UserHelper {
         return userRepository.findByEmail(email).orElseThrow(()->
                 new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND,email)));
 
+    }
+
+    public boolean doesUserExist(String email){
+
+        if (userRepository.existsByEmail(email)){
+            throw new ConflictException(String.format(ErrorMessages.USER_ALREADY_EXISTS,email));
+        }
+
+        return false;
     }
 
 

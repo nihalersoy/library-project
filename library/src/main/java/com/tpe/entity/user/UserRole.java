@@ -24,7 +24,7 @@ public class UserRole {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    //private String name; TODO buraya bir bak
+    private String name;
 
 
 }

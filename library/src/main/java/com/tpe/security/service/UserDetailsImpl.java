@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,13 +27,13 @@ public class UserDetailsImpl implements UserDetails {
     private String phone;
     private Collection< ? extends GrantedAuthority > authorities;
 
-    public UserDetailsImpl(String phone,Long id,String email, String password,String roleName) {
+    public UserDetailsImpl(String phone, Long id, String email, String password, Set<String> roleNames) {
         this.id= id;
         this.email = email;
         this.phone= phone;
         this.password = password;
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority(roleName));
+        roleNames.forEach(role->grantedAuthorities.add(new SimpleGrantedAuthority(role)));
         this.authorities = grantedAuthorities;
     }
 

@@ -40,9 +40,7 @@ public class JwtUtils {
     public boolean validateToken (String token){
 
         try {
-            Jwts.parser()
-                    .setSigningKey(jwtSecretKey)
-                    .parseClaimsJws(token);
+            Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
             LOGGER.error("Secret keyiniz expired olmuştur"); //TODO LOGGER
