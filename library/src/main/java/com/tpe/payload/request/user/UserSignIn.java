@@ -1,6 +1,7 @@
 package com.tpe.payload.request.user;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotNull;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@SuperBuilder
 
 public class UserSignIn extends BaseUserRequest{
 

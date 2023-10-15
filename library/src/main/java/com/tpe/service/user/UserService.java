@@ -1,7 +1,9 @@
 package com.tpe.service.user;
 
+import com.tpe.LibraryApplication;
 import com.tpe.entity.enums.Role;
 import com.tpe.entity.user.User;
+import com.tpe.entity.user.UserRole;
 import com.tpe.payload.request.user.SaveUserRequest;
 import com.tpe.payload.response.user.UserResponse;
 import com.tpe.exception.BadRequestException;
@@ -21,16 +23,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+
 public class UserService {
 
     private final AuthenticationManager authenticationManager;
@@ -56,24 +64,23 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         //token oluşturuldu
-        String token = "Bearer " + jwtUtils.generateToken(authentication);
+        String token = "Bearer "+ jwtUtils.generateToken(authentication);
 
         //Sign in olan User getirildi
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        //user girdiği rol bilgisi doğru mu kontrolü
-        checkIfRoleCorrect(userSignIn.getRole());
 
-        //user hangi rolle giriş yapmış kontrolü
-        String role = getUserRole(userSignIn.getRole());
+        List<String> roles = userDetails.getAuthorities()
+                .stream().map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
         //response nesnesindeki diğer filedları setliyoruz
         UserSignInResponse.UserSignInResponseBuilder userSignInResponse = UserSignInResponse.builder();
         userSignInResponse.phone(userDetails.getPhone());
         userSignInResponse.email(userDetails.getEmail());
-        userSignInResponse.token(token);
-        if (role!=null){
-            userSignInResponse.role(role);
+        userSignInResponse.token(token.substring(7));
+        if (!roles.isEmpty()){
+            userSignInResponse.roles(roles);
         }
 
         return ResponseMessage.<UserSignInResponse>builder()
@@ -83,38 +90,6 @@ public class UserService {
                 .build();
 
     }
-
-    private boolean checkIfRoleCorrect(String role){
-
-        if ( !(role.equalsIgnoreCase(Role.ADMIN.getName()) ||
-                role.equalsIgnoreCase(Role.MEMBER.getName()) ||
-                role.equalsIgnoreCase(Role.EMPLOYEE.getName()) ||
-                role.equalsIgnoreCase("ANONYMOUS")) ){
-
-            throw new BadRequestException(String.format(ErrorMessages.ROLE_DOES_NOT_EXIST,role));
-        }
-
-        return true;
-    }
-
-    private String getUserRole(String role){
-
-        if (role.equalsIgnoreCase(Role.ADMIN.getName())){
-
-            return Role.ADMIN.getName();
-        }
-        if (role.equalsIgnoreCase(Role.MEMBER.getName())){
-
-            return Role.MEMBER.getName();
-        }
-        if (role.equalsIgnoreCase(Role.EMPLOYEE.getName())){
-
-            return Role.EMPLOYEE.getName();
-        }
-
-        return null;
-    }
-
 
     public ResponseMessage<UserResponse> register(UserRequest userRequest) {
 
@@ -145,7 +120,6 @@ public class UserService {
                 .build();
     }
 
-
     public ResponseMessage<UserResponse> getAuthenticatedUser(HttpServletRequest servletRequest) {
 
         User user = userHelper.getUserByEmail(servletRequest);
@@ -154,7 +128,6 @@ public class UserService {
                 .httpStatus(HttpStatus.OK)
                 .build();
     }
-
 
     public int countAllAdmins() {
         return userRepository.countAllAdmins(Role.ADMIN);
@@ -172,44 +145,80 @@ public class UserService {
         //methodu kim tetikledi bakıyoruz
         User savingUser = userHelper.getUserByEmail(servletRequest);
 
-        //rol setlemesi yapılıyor
+        //Requestle gelen strign role-->UserRole çeviriyoruz
+        Role roleRequest = userRoleService.getRoleFromString(saveUserRequest.getRole());
+        UserRole userRoleRequest = userRoleService.getUserRole(roleRequest);
+
+        //rol setlemesinden önce kontrol yapılıyor
         if (savingUser.getUserRoles().stream()
-                .anyMatch(userRole -> userRole.getName().equalsIgnoreCase(Role.ADMIN.getName()))){
+                .noneMatch(userRole -> userRole.getName().equalsIgnoreCase(Role.ADMIN.getName()))
+                && !(roleRequest.getName().equalsIgnoreCase(Role.MEMBER.getName()))){ //admin değilse ve member harici bir user save etmek isterse
 
+            throw new BadRequestException(String.format(ErrorMessages.SAVE_USER_ERROR,saveUserRequest.getRole()));
         }
+         //rol setlemesi yapılacak
+        user.setUserRoles(new HashSet<>());
+        user.getUserRoles().add(userRoleRequest);
 
-        return null;
+        //password encode
+        user.setPassword( passwordEncoder.encode(saveUserRequest.getPassword())  );
+
+        //eksik field setlemesi
+        user.setScore(0);
+        user.setCreateDate(LocalDateTime.now());
+        user.setBuiltIn(Boolean.FALSE);
+        user.setLoanList(new ArrayList<>());
+
+        User savedUser = userRepository.save(user);
+
+        return ResponseMessage.<UserResponse>builder()
+                .object(userMapper.mapUserToUserResponse(user))
+                .message(SuccessMessages.USER_SAVE)
+                .httpStatus(HttpStatus.CREATED)
+                .build();
+
     }
 
-    /*
-    //[!]Role bilgisi setlenecek
-        if (userRole.equalsIgnoreCase(RoleType.ADMIN.name())){
+    //RUNNER ICIN
+    public ResponseMessage<UserResponse> saveAdmin
+            (SaveUserRequest saveUserRequest) {
 
-            if (Objects.equals(userRequest.getUsername(),"Admin")){
-                user.setBuilt_in(true);
-            }
-            user.setUserRole(userRoleService.getUserRole(RoleType.ADMIN));
-        }else if (userRole.equalsIgnoreCase("Dean")){
-            user.setUserRole(userRoleService.getUserRole(RoleType.MANAGER));
-        } else if (userRole.equalsIgnoreCase("ViceDean")) {
-            user.setUserRole(userRoleService.getUserRole(RoleType.ASSISTANT_MANAGER));
-        }else {
-            throw new ResourceNotFoundException(String.format(ErrorMessages.NOT_FOUND_USER_USERROLE,userRole));
-        }
+        //requestle gelen email zaten var mı?
+        userHelper.doesUserExist(saveUserRequest.getEmail());
 
-        //[!] Password encode edilecek
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        //DTO-->POJO
+        User user = userMapper.mapUserRequestToUser(saveUserRequest);
 
-        //[!] isAdvisor --> False
-        user.setIsAdvisor(Boolean.FALSE);
-        //[!] DB ye kaydediliyor
+
+        //Requestle gelen strign role-->UserRole çeviriyoruz
+        Role roleRequest = userRoleService.getRoleFromString(saveUserRequest.getRole());
+        UserRole userRoleRequest = userRoleService.getUserRole(roleRequest);
+
+        //rol setlemesi yapılacak
+        user.setUserRoles(new HashSet<>());
+        user.getUserRoles().add(userRoleRequest);
+
+        //password encode
+        user.setPassword( passwordEncoder.encode(saveUserRequest.getPassword())  );
+
+        //eksik field setlemesi
+        user.setScore(0);
+        user.setCreateDate(LocalDateTime.now());
+        user.setBuiltIn(Boolean.TRUE);
+
         User savedUser = userRepository.save(user);
-        //[] Response nesnesi oluşturuluyor
+
         return ResponseMessage.<UserResponse>builder()
-                .message(SuccessMessages.USER_CREATED)
-                .object(userMapper.mapUserToUserResponse(savedUser))
+                .object(userMapper.mapUserToUserResponse(user))
+                .message(SuccessMessages.USER_SAVE)
+                .httpStatus(HttpStatus.CREATED)
                 .build();
-     */
+
+    }
+
+
+
+
 }
 
 

@@ -1,9 +1,6 @@
 package com.tpe.entity.business;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 
 @Table(name = "t_publisher")
 public class Publisher {
@@ -21,7 +19,7 @@ public class Publisher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false) //TODO min:2 max:50
+    @Column(nullable = false,unique = true) //TODO min:2 max:50
     private String name;
 
     @Column(nullable = false) //TODO default false

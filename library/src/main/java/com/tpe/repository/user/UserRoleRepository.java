@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserRoleRepository extends JpaRepository<UserRole,Long> {
 
-    @Query("SELECT u FROM UserRole u WHERE u.role = ?1")
+    @Query("SELECT u FROM UserRole u WHERE u.role = :role")
     Optional<UserRole> findByEnumRole(Role role);
 
 

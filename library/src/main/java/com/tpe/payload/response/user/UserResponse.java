@@ -2,6 +2,7 @@ package com.tpe.payload.response.user;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -24,7 +25,7 @@ public class UserResponse {
 
     private String phone;
 
-    private Date birthDate;
+    private LocalDate birthDate;
 
     private String email;
 

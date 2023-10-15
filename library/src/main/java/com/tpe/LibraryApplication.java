@@ -2,6 +2,7 @@ package com.tpe;
 
 import com.tpe.entity.enums.Role;
 import com.tpe.entity.user.UserRole;
+import com.tpe.payload.request.user.SaveUserRequest;
 import com.tpe.repository.user.UserRoleRepository;
 import com.tpe.service.user.UserRoleService;
 import com.tpe.service.user.UserService;
@@ -9,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.time.LocalDate;
 @SpringBootApplication
 public class LibraryApplication implements CommandLineRunner {
 
@@ -53,31 +55,20 @@ public class LibraryApplication implements CommandLineRunner {
 		//Built-in admin yapıyoruz
 		if (userService.countAllAdmins()==0){
 
-
-		}
-	}
-
-	/*
-
-
-		// !!! Built_in Admin olusturuluyor
-		if(userService.countAllAdmins() == 0) {
-			UserRequest adminRequest = new UserRequest();
-			adminRequest.setUsername("Admin");
+			SaveUserRequest adminRequest = new SaveUserRequest();
 			adminRequest.setEmail("aaa@bbb.com");
-			adminRequest.setSsn("111-11-1111");
 			adminRequest.setPassword("12345678");
-			adminRequest.setName("Ahmet");
-			adminRequest.setSurname("ahmet");
-			adminRequest.setPhoneNumber("111-111-1111");
-			adminRequest.setGender(Gender.MALE);
-			adminRequest.setBirthDay(LocalDate.of(1980,2,2));
-			adminRequest.setBirthPlace("Texas");
+			adminRequest.setFirstName("Ayşe");
+			adminRequest.setLastName("Nihal");
+			adminRequest.setAddress("Ankara,Turkey");
+			adminRequest.setPhone("999-999-9999");
+			adminRequest.setBirthDate(LocalDate.of(1994,5,22));
+			adminRequest.setRole("ADMIN");
 
-			userService.saveUser(adminRequest,"Admin");
+
+			userService.saveAdmin(adminRequest);
 		}
-
 	}
-	 */
+
 
 }

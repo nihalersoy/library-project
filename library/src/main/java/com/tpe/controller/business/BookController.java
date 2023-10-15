@@ -20,7 +20,7 @@ public class BookController {
 
     private final BookService bookService;
 
-    //Not: getBooksWithPage()
+//    Not: getBooksWithPage()
     @GetMapping //FRD herkes girebilsin demiş //TODO WhiteList ekle
     public Page<BookResponse> getBooksWithPage(
             @RequestParam(value = "q",required = false,defaultValue = "null") String q,
@@ -46,7 +46,7 @@ public class BookController {
     }
 
     //Not: saveBook()
-    @PreAuthorize("hasAnyAuthority('ADMIN)")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("/save")
     public ResponseMessage<BookResponse> saveBook(@RequestBody @Valid BookRequest bookRequest){
 
@@ -54,7 +54,7 @@ public class BookController {
     }
 
     //Not: updateBookById()
-    @PreAuthorize("hasAnyAuthority('ADMIN)")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PutMapping("/updateBook/{id}")
     public ResponseMessage<BookResponse> updateBook(
             @RequestBody @Valid BookRequestForUpdate bookRequestForUpdate,
@@ -64,7 +64,7 @@ public class BookController {
     }
 
     //NOT: deleteBookById()
-    @PreAuthorize("hasAnyAuthority('ADMIN)")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseMessage<String> deleteBook (@PathVariable Long id){
 

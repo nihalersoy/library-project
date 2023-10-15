@@ -6,13 +6,11 @@ import com.tpe.payload.request.user.UserSignIn;
 import com.tpe.payload.response.business.ResponseMessage;
 import com.tpe.payload.response.user.UserResponse;
 import com.tpe.payload.response.user.UserSignInResponse;
+import com.tpe.service.helper.UserHelper;
 import com.tpe.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -23,9 +21,10 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final UserHelper userHelper;
 
     //NOT: signIn()
-    @PostMapping("/signin") //TODO WhiteListe ekle
+    @PostMapping("/signin")
     public ResponseMessage<UserSignInResponse> signInForAnonymous(
             @RequestBody @Valid UserSignIn userSignIn){
 
@@ -48,6 +47,19 @@ public class UserController {
         return userService.getAuthenticatedUser(servletRequest);
     }
 
+    //NOT: getUserLoans() It will return authenticated user loans
+//    @PreAuthorize("hasAnyAuthority('MEMBER','ADMIN','EMPLOYEE')")
+//    @PostMapping("/user/loans")
+//    public ResponseMessage<UserWithLoans> getUserLoans(
+//            @RequestParam (value = "page", defaultValue = "0") int page,
+//            @RequestParam (value = "size", defaultValue = "20") int size,
+//            @RequestParam (value = "sort", defaultValue = "createDate") String sort,
+//            @RequestParam (value = "type", defaultValue = "desc") String type){
+//
+//
+//    }
+
+
     //NOT: saveUser()
     @PreAuthorize("hasAnyAuthority('MEMBER','ADMIN','EMPLOYEE')")
     @PostMapping("/saveUser")
@@ -57,6 +69,8 @@ public class UserController {
 
         return userService.saveUser(saveUserRequest,servletRequest);
     }
+
+
 
 
 

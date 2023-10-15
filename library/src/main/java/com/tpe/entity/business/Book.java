@@ -51,10 +51,10 @@ public class Book {
     @Column(nullable = false) //TODO default false
     private boolean builtIn;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "bookList",fetch = FetchType.EAGER)
     private List<Loan> loanList;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "books")
     private List<Author> authors;
 
     @ManyToOne

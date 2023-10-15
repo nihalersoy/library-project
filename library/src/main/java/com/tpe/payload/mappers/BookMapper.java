@@ -2,6 +2,7 @@ package com.tpe.payload.mappers;
 
 import com.tpe.entity.business.Book;
 import com.tpe.payload.request.business.BookRequest;
+import com.tpe.payload.request.business.BookRequestForUpdate;
 import com.tpe.payload.response.business.BookResponse;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,18 @@ public class BookMapper {
     }
 
     public Book mapBookRequestToBook (BookRequest bookRequest){
+        return Book.builder()
+                .name(bookRequest.getName())
+                .isbn(bookRequest.getIsbn())
+                .pageCount(bookRequest.getPageCount())
+                .publishDate(bookRequest.getPublishDate())
+                .image(bookRequest.getImage())
+                .shelfCode(bookRequest.getShelfCode())
+                .featured(bookRequest.isFeatured())
+                .build();
+    }
+
+    public Book mapBookRequestUpdateToBook (BookRequestForUpdate bookRequest){
         return Book.builder()
                 .name(bookRequest.getName())
                 .isbn(bookRequest.getIsbn())

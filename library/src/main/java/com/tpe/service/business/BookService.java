@@ -4,6 +4,7 @@ import com.tpe.entity.business.Author;
 import com.tpe.entity.business.Book;
 import com.tpe.entity.business.Category;
 import com.tpe.entity.business.Publisher;
+import com.tpe.entity.enums.Role;
 import com.tpe.entity.user.User;
 import com.tpe.exception.BadRequestException;
 import com.tpe.exception.ConflictException;
@@ -65,7 +66,7 @@ public class BookService {
 
     private boolean isUserAdmin (User user){
 
-        if (user.getUserRole().getRole().getName().equals("ADMIN")){
+        if (user.getUserRoles().stream().anyMatch(userRole -> userRole.getName().equalsIgnoreCase(Role.ADMIN.getName()))){
             return true;
         }
         return false;
@@ -110,6 +111,7 @@ public class BookService {
         book.setAuthors(authors);
         book.setPublisher(publisher);
         book.setCategory(category);
+        book.setLoanList(new ArrayList<>());
 
         return ResponseMessage.<BookResponse>builder()
                 .httpStatus(HttpStatus.CREATED)
@@ -136,7 +138,7 @@ public class BookService {
         Category category = categoryService.getCategoryById(bookRequestForUpdate.getCategoryId());
 
         //DTO-->POJO donusum
-        Book updatedBook = bookMapper.mapBookRequestToBook(bookRequestForUpdate);
+        Book updatedBook = bookMapper.mapBookRequestUpdateToBook(bookRequestForUpdate);
 
         //eksik filedları setliyoruz
         updatedBook.setLoanable(true);
@@ -180,4 +182,9 @@ public class BookService {
         return true;
     }
 
+    public Book isBookExistById(Long bookId) {
+
+        return bookRepository.findById(bookId).orElseThrow(()->
+                new ResourceNotFoundException(String.format(ErrorMessages.BOOK_NOT_FOUND,bookId)));
+    }
 }

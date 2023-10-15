@@ -3,6 +3,8 @@ package com.tpe.payload.response.user;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,7 +16,7 @@ public class UserSignInResponse {
 
     private String token;
 
-    private String role;
+    private List<String> roles;
 
     private String phone;
 

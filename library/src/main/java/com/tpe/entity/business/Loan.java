@@ -1,10 +1,7 @@
 package com.tpe.entity.business;
 
 import com.tpe.entity.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +12,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 
 @Table(name = "t_loan")
 public class Loan {
@@ -22,8 +20,6 @@ public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    //TODO BooK ile ilişki kurulacak
 
     @Column(nullable = false)
     private LocalDateTime loanDate;//TODO yyyy-MM-dd HH:mm timezone:US
@@ -39,7 +35,7 @@ public class Loan {
     @ManyToOne
     private User user;
 
-    @ManyToMany(mappedBy = "loanList")
+    @ManyToMany()
     @JoinTable(name = "loans_books",joinColumns = @JoinColumn(name = "loan_id"),inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> bookList;
 

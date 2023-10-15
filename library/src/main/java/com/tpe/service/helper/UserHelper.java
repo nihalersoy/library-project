@@ -39,6 +39,13 @@ public class UserHelper {
         return false;
     }
 
+    public User isUserExistsById (Long id){
+
+        return userRepository.findById(id).orElseThrow(()->
+                new ResourceNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND_BY_ID,id)));
+
+    }
+
 
 
 }

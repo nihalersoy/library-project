@@ -2,6 +2,7 @@ package com.tpe.service.business;
 
 import com.tpe.entity.business.Author;
 import com.tpe.exception.ResourceNotFoundException;
+import com.tpe.payload.messages.ErrorMessages;
 import com.tpe.repository.business.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,8 @@ public class AuthorService {
 
         List<Author> authorList =authorRepository.findAllById(authorIdList);
         if (authorList.isEmpty()){
-            throw new ResourceNotFoundException()
+            throw new ResourceNotFoundException(ErrorMessages.AUTHOR_NOT_FOUND);
         }
+        return authorList;
     }
 }

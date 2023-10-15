@@ -1,6 +1,7 @@
 package com.tpe.payload.request.business;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Digits;
@@ -14,7 +15,8 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder(toBuilder = true)
+
+@SuperBuilder
 public class BookRequest {
 
 

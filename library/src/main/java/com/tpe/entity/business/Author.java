@@ -27,7 +27,7 @@ public class Author {
     @Column(nullable = false) //TODO default false
     private Boolean builtIn;
 
-    @ManyToMany(mappedBy = "authors")
+    @ManyToMany()
     @JoinTable(name = "authors_books",joinColumns = @JoinColumn(name = "author_id"),inverseJoinColumns = @JoinColumn(name = "book_id"))
     private List<Book> books;
 

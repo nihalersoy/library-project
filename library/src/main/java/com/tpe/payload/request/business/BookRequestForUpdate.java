@@ -1,16 +1,17 @@
 package com.tpe.payload.request.business;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
+
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
-@Builder(toBuilder = true)
+@SuperBuilder
 public class BookRequestForUpdate extends BookRequest{
 
     @NotNull(message = "Please state if book is active")

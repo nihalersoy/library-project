@@ -12,9 +12,8 @@ import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book,Long> {
 
-    @Query("SELECT b FROM Book b " +
-            "WHERE (:q IS NULL OR b.bookName LIKE %:q% OR b.isbn = :q " +
-            "OR b.publisher.name LIKE %:q% OR EXISTS (SELECT a FROM b.authors a WHERE a.name LIKE %:q%)) " +
+    @Query("SELECT b FROM Book b WHERE (:q IS NULL OR b.name = :q OR b.isbn = :q " +
+            "OR b.publisher.name = :q OR EXISTS (SELECT a FROM b.authors a WHERE a.name = :q)) " +
             "AND (:category = 'null' OR b.category = :category) " +
             "AND (:author = 'null' OR EXISTS (SELECT a FROM b.authors a WHERE a.name = :author)) " +
             "AND (:publisher = 'null' OR b.publisher.name = :publisher) " +
